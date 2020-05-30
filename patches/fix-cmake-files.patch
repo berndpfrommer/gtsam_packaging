@@ -1,0 +1,239 @@
+fix CMakeLists.txt files
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -22,6 +22,7 @@
+ 
+ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+ include(GtsamMakeConfigFile)
++include(GNUInstallDirs)
+ 
+ # Record the root dir for gtsam - needed during external builds, e.g., ROS
+ set(GTSAM_SOURCE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+@@ -88,7 +89,7 @@
+ 
+   # Set the GTSAM_BUILD_TAG variable.
+   # If build type is Release, set to blank (""), else set to the build type.
+-  if("${CMAKE_BUILD_TYPE_UPPER}" STREQUAL "RELEASE")
++  if(${CMAKE_BUILD_TYPE_UPPER} STREQUAL "RELEASE")
+    set(GTSAM_BUILD_TAG "") # Don't create release mode tag on installed directory
+   else()
+    set(GTSAM_BUILD_TAG "${CMAKE_BUILD_TYPE}")
+@@ -185,12 +186,6 @@
+   optimized ${Boost_THREAD_LIBRARY_RELEASE}
+   optimized ${Boost_DATE_TIME_LIBRARY_RELEASE}
+   optimized ${Boost_REGEX_LIBRARY_RELEASE}
+-  debug ${Boost_SERIALIZATION_LIBRARY_DEBUG}
+-  debug ${Boost_SYSTEM_LIBRARY_DEBUG}
+-  debug ${Boost_FILESYSTEM_LIBRARY_DEBUG}
+-  debug ${Boost_THREAD_LIBRARY_DEBUG}
+-  debug ${Boost_DATE_TIME_LIBRARY_DEBUG}
+-  debug ${Boost_REGEX_LIBRARY_DEBUG}
+ )
+ message(STATUS "GTSAM_BOOST_LIBRARIES: ${GTSAM_BOOST_LIBRARIES}")
+ if (GTSAM_DISABLE_NEW_TIMERS)
+@@ -201,8 +196,6 @@
+       list(APPEND GTSAM_BOOST_LIBRARIES
+         optimized ${Boost_TIMER_LIBRARY_RELEASE}
+         optimized ${Boost_CHRONO_LIBRARY_RELEASE}
+-        debug ${Boost_TIMER_LIBRARY_DEBUG}
+-        debug ${Boost_CHRONO_LIBRARY_DEBUG}
+         )
+     else()
+       list(APPEND GTSAM_BOOST_LIBRARIES rt) # When using the header-only boost timer library, need -lrt
+--- a/CppUnitLite/CMakeLists.txt
++++ b/CppUnitLite/CMakeLists.txt
+@@ -12,6 +12,6 @@
+ 
+ option(GTSAM_INSTALL_CPPUNITLITE "Enable/Disable installation of CppUnitLite library" ON)
+ if (GTSAM_INSTALL_CPPUNITLITE)
+-    install(FILES ${cppunitlite_headers} DESTINATION include/CppUnitLite)
+-    install(TARGETS CppUnitLite EXPORT GTSAM-exports ARCHIVE DESTINATION lib)
++    install(FILES ${cppunitlite_headers} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/CppUnitLite)
++    install(TARGETS CppUnitLite EXPORT GTSAM-exports ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ endif(GTSAM_INSTALL_CPPUNITLITE)
+--- a/gtsam/3rdparty/CMakeLists.txt
++++ b/gtsam/3rdparty/CMakeLists.txt
+@@ -1,6 +1,6 @@
+ # install CCOLAMD headers
+-install(FILES CCOLAMD/Include/ccolamd.h DESTINATION include/gtsam/3rdparty/CCOLAMD)
+-install(FILES SuiteSparse_config/SuiteSparse_config.h DESTINATION include/gtsam/3rdparty/SuiteSparse_config)
++install(FILES CCOLAMD/Include/ccolamd.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gtsam/3rdparty/CCOLAMD)
++install(FILES SuiteSparse_config/SuiteSparse_config.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gtsam/3rdparty/SuiteSparse_config)
+ 
+ if(NOT GTSAM_USE_SYSTEM_EIGEN)
+ 	# Find plain .h files
+@@ -12,7 +12,7 @@
+ 		get_filename_component(filename ${eigen_dir} NAME)
+ 		if (NOT ((${filename} MATCHES "CMakeLists.txt") OR (${filename} MATCHES "src") OR (${filename} MATCHES ".svn")))
+ 			list(APPEND eigen_headers "${CMAKE_CURRENT_SOURCE_DIR}/Eigen/Eigen/${filename}")
+-			install(FILES Eigen/Eigen/${filename} DESTINATION include/gtsam/3rdparty/Eigen/Eigen)
++			install(FILES Eigen/Eigen/${filename} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gtsam/3rdparty/Eigen/Eigen)
+ 		endif()
+ 	endforeach(eigen_dir)
+ 
+@@ -26,7 +26,7 @@
+ 			get_filename_component(filename ${unsupported_eigen_dir} NAME)
+ 			if (NOT ((${filename} MATCHES "CMakeLists.txt") OR (${filename} MATCHES "src") OR (${filename} MATCHES "CXX11") OR (${filename} MATCHES ".svn")))
+ 				list(APPEND unsupported_eigen_headers "${CMAKE_CURRENT_SOURCE_DIR}/Eigen/unsupported/Eigen/${filename}")
+-				install(FILES Eigen/unsupported/Eigen/${filename} DESTINATION include/gtsam/3rdparty/Eigen/unsupported/Eigen)
++				install(FILES Eigen/unsupported/Eigen/${filename} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gtsam/3rdparty/Eigen/unsupported/Eigen)
+ 			endif()
+ 		endforeach(unsupported_eigen_dir)
+ 	endif()
+@@ -37,12 +37,12 @@
+ 
+ 	# install Eigen - only the headers in our 3rdparty directory
+ 	install(DIRECTORY Eigen/Eigen
+-		DESTINATION include/gtsam/3rdparty/Eigen
++		DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gtsam/3rdparty/Eigen
+ 		FILES_MATCHING PATTERN "*.h")
+ 
+ 	if(GTSAM_WITH_EIGEN_UNSUPPORTED)
+ 		install(DIRECTORY Eigen/unsupported/Eigen
+-			DESTINATION include/gtsam/3rdparty/Eigen/unsupported/
++			DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gtsam/3rdparty/Eigen/unsupported/
+ 			FILES_MATCHING PATTERN "*.h")
+ 	endif()
+ 
+--- a/gtsam/3rdparty/Eigen/blas/CMakeLists.txt
++++ b/gtsam/3rdparty/Eigen/blas/CMakeLists.txt
+@@ -39,9 +39,9 @@
+ add_dependencies(blas eigen_blas eigen_blas_static)
+ 
+ install(TARGETS eigen_blas eigen_blas_static
+-        RUNTIME DESTINATION bin
+-        LIBRARY DESTINATION lib
+-        ARCHIVE DESTINATION lib)
++        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ 
+ if(EIGEN_Fortran_COMPILER_WORKS)
+ 
+--- a/gtsam/3rdparty/Eigen/lapack/CMakeLists.txt
++++ b/gtsam/3rdparty/Eigen/lapack/CMakeLists.txt
+@@ -103,9 +103,9 @@
+ add_dependencies(lapack eigen_lapack eigen_lapack_static)
+ 
+ install(TARGETS eigen_lapack eigen_lapack_static
+-        RUNTIME DESTINATION bin
+-        LIBRARY DESTINATION lib
+-        ARCHIVE DESTINATION lib)
++        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ 
+         
+         
+--- a/gtsam/3rdparty/metis/GKlib/CMakeLists.txt
++++ b/gtsam/3rdparty/metis/GKlib/CMakeLists.txt
+@@ -16,6 +16,6 @@
+ add_subdirectory("test")
+ 
+ install(TARGETS GKlib
+-  ARCHIVE DESTINATION lib
+-  LIBRARY DESTINATION lib)
+-install(FILES ${GKlib_includes} DESTINATION include)
++  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
++install(FILES ${GKlib_includes} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+--- a/gtsam/3rdparty/metis/libmetis/CMakeLists.txt
++++ b/gtsam/3rdparty/metis/libmetis/CMakeLists.txt
+@@ -4,23 +4,26 @@
+ file(GLOB metis_sources *.c)
+ # Build libmetis.
+ add_definitions(-fPIC)
+-add_library(metis ${METIS_LIBRARY_TYPE} ${GKlib_sources} ${metis_sources})
++add_library(metis-gtsam ${METIS_LIBRARY_TYPE} ${GKlib_sources} ${metis_sources})
+ if(UNIX)
+-  target_link_libraries(metis m)
++  target_link_libraries(metis-gtsam m)
+ endif()
+ 
+ if(WIN32)
+-		set_target_properties(metis PROPERTIES
++		set_target_properties(metis-gtsam PROPERTIES
+ 			PREFIX ""
+ 			RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/../../../bin")
+ endif()
+ 
+ if (APPLE)
+-		set_target_properties(metis PROPERTIES
++		set_target_properties(metis-gtsam PROPERTIES
+ 			INSTALL_NAME_DIR
+ 			"${CMAKE_INSTALL_PREFIX}/lib")
+  endif()
+ 
+-install(TARGETS metis EXPORT GTSAM-exports LIBRARY DESTINATION lib ARCHIVE DESTINATION lib RUNTIME DESTINATION bin)
+-list(APPEND GTSAM_EXPORTED_TARGETS metis)
++install(TARGETS metis-gtsam EXPORT GTSAM-exports
++  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
++list(APPEND GTSAM_EXPORTED_TARGETS metis-gtsam)
+ set(GTSAM_EXPORTED_TARGETS "${GTSAM_EXPORTED_TARGETS}" PARENT_SCOPE)
+--- a/gtsam/3rdparty/metis/programs/CMakeLists.txt
++++ b/gtsam/3rdparty/metis/programs/CMakeLists.txt
+@@ -15,7 +15,7 @@
+ 
+ if(METIS_INSTALL)
+   install(TARGETS gpmetis ndmetis mpmetis m2gmetis graphchk cmpfillin
+-    RUNTIME DESTINATION bin)
++    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+ endif()
+ 
+ # Try to find subversion revision.
+--- a/gtsam/CMakeLists.txt
++++ b/gtsam/CMakeLists.txt
+@@ -49,7 +49,7 @@
+ 
+ # Common headers
+ file(GLOB gtsam_core_headers "*.h")
+-install(FILES ${gtsam_core_headers} DESTINATION include/gtsam)
++install(FILES ${gtsam_core_headers} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gtsam)
+ 
+ # assemble core libaries
+ foreach(subdir ${gtsam_subdirs})
+@@ -86,10 +86,10 @@
+ set(library_name GTSAM) # For substitution in dllexport.h.in
+ configure_file("${GTSAM_SOURCE_DIR}/cmake/dllexport.h.in" "dllexport.h")
+ list(APPEND gtsam_srcs "${PROJECT_BINARY_DIR}/config.h" "${PROJECT_BINARY_DIR}/dllexport.h")
+-install(FILES "${PROJECT_BINARY_DIR}/config.h" "${PROJECT_BINARY_DIR}/dllexport.h" DESTINATION include/gtsam)
++install(FILES "${PROJECT_BINARY_DIR}/config.h" "${PROJECT_BINARY_DIR}/dllexport.h" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gtsam)
+ 
+ if(GTSAM_SUPPORT_NESTED_DISSECTION)
+-    list(APPEND GTSAM_ADDITIONAL_LIBRARIES metis)
++    list(APPEND GTSAM_ADDITIONAL_LIBRARIES metis-gtsam)
+ endif()
+ 
+ # Versions
+@@ -185,9 +185,9 @@
+ install(
+ 	TARGETS gtsam
+ 	EXPORT GTSAM-exports
+-	LIBRARY DESTINATION lib
+-	ARCHIVE DESTINATION lib
+-	RUNTIME DESTINATION bin)
++	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+ 
+ list(APPEND GTSAM_EXPORTED_TARGETS gtsam)
+ set(GTSAM_EXPORTED_TARGETS "${GTSAM_EXPORTED_TARGETS}" PARENT_SCOPE)
+--- a/wrap/CMakeLists.txt
++++ b/wrap/CMakeLists.txt
+@@ -41,12 +41,12 @@
+ set_target_properties(wrap_lib wrap PROPERTIES FOLDER "${relative_path}")
+ 
+ # Install wrap binary and export target
+-install(TARGETS wrap EXPORT GTSAM-exports DESTINATION bin)
++install(TARGETS wrap EXPORT GTSAM-exports DESTINATION ${CMAKE_INSTALL_BINDIR})
+ list(APPEND GTSAM_EXPORTED_TARGETS wrap)
+ set(GTSAM_EXPORTED_TARGETS "${GTSAM_EXPORTED_TARGETS}" PARENT_SCOPE)
+ 
+ # Install matlab header
+-install(FILES matlab.h DESTINATION include/wrap)
++install(FILES matlab.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/wrap)
+ 
+ # Build tests
+ add_subdirectory(tests)
