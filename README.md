@@ -2,35 +2,30 @@
 
 How to package GTSAM and upload to Ubuntu PPA
 
+## About version numbers
+
+First decided what version of GTSAM you want to build. There is no wiggle room here, it has to be three numbers. Set up a shell variable like so:
+
+    gtsam_version=4.0.2
+	
+Since you may end up uploading the same major+minor number software with slight packaging modificiations until you are happy with what is in your ppa, you must maintain your own version number that needs to lexicographically increase every time you upload a new version. Traditionally this version number has been just 1, 2... etc, but it is a good idea to use it to indicate where this package comes from, i.e. your personal ppa. Let's define a shell variable for this:
+
+    mod_version=2pfrommer1
 
 ## Grab the source code
 
-(Warning: Building from the original sources will not work as I had to
-make modifications to the source tree to build. Rather than doing it
-the right way, with patches as described later, I updated the gtsam
-sources. See below how to grab my sources which will should work with
-this procedure)
+Directly from the GTSAM repo:
 
     git https://github.com/borglab/gtsam.git gtsam
 	cd gtsam
-	git checkout 4.0.2
+	git checkout ${gtsam_version}
 
-## Alternative: grab the modified source code
-
-    git clone https://github.com/berndpfrommer/gtsam.git gtsam
-	cd gtsam
-    git checkout 4.0.2_pkg
-
-What version of the tree you should check out?
-
-  - If it's a new version number that you have *never* uploaded to the PPA you plan to upload it to, then checkout the exact version you want to package, for instance a release tag.
-
-  - If you have already uploaded a source package before, i.e. there is an orig.tar.gz sitting in the cloud at Ubuntu, check out exactly that source version
+You can also checkout a specific commit you like
 
 ## Make the tar ball
 
     git archive --format=tar HEAD -o ../gtsam_${gtsam_version}.orig.tar
-	gzip ../gtsam_${version}.orig.tar
+	gzip ../gtsam_${gtsam_version}.orig.tar
 
 This will create a tar ball with the original, unchanged sources. You can only upload a tarball like that *once* for any given version, e.g. 4.0.2. All subsequent modifications that you make to the sources, for instance to get the sources to build, must be captured by patches with respect to that tar ball. The ``quilt`` tool is used for such patching. 
 
@@ -40,6 +35,7 @@ If you don't know exactly what is uploaded at this point, download the ``*.orig.
 ## Grab the debian files from the packaging repo
 
     cd gtsam
+	rm -rf debian
 	git clone https://github.com/berndpfrommer/gtsam_packaging debian
 
 ## Use quilt to update the source tree if needed
@@ -68,14 +64,6 @@ When you are done with all patches, save them away
     dquilt pop -a      # unapply all patches, revert to original source
 
 ## Update the changelog
-
-Since you may end up uploading the same major+minor number software with slight packaging modificiations until you are happy with what is in your ppa, you must maintain your own version number that needs to lexicographically increase every time you upload a new version. Traditionally this version number has been just 1, 2... etc, but it is a good idea to use it to indicate where this package comes from, i.e. your personal ppa. Let's define a shell variable for this:
-
-    mod_version=2pfrommer1
-
-You also must set up a variable that captures the actual gtsam version you are releasing. There is no wiggle room here, it has to be three numbers, like so:
-
-    gtsam_version=4.0.2
 
 We also need to specify what Ubuntu distribution we are targeting, i.e:
 
