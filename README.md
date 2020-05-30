@@ -128,6 +128,11 @@ The directory one up from the source directory should now have various packages.
 Now repeat the above steps, starting with the changelog, for other distributions (bionic, focal....)
 
 
+## Finishing up
+
+When you are all done, commit your changes to the debian repo (not the gtsam source repo), and push.
+
+
 ## Troubleshooting
 
 ### Upload problems
