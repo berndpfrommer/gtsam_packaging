@@ -11,8 +11,7 @@ How to package GTSAM and upload to Ubuntu PPA
 
 What version of the tree you should check out?
 
-  - If it's a new version number that you have *never* uploaded to the PPA you plan to upload it to,
-    then checkout the exact version you want to package, for instance a release tag.
+  - If it's a new version number that you have *never* uploaded to the PPA you plan to upload it to, then checkout the exact version you want to package, for instance a release tag.
 
   - If you have already uploaded a source package before, i.e. there is an orig.tar.gz sitting in the cloud at Ubuntu, check out exactly that source version
 
@@ -129,7 +128,23 @@ The directory one up from the source directory should now have various packages.
 Now repeat the above steps, starting with the changelog, for other distributions (bionic, focal....)
 
 
-## Troubleshooting build problems
+## Troubleshooting
+
+### Upload problems
+
+If you get
+
+    "Package has already been uploaded to ppa on ppa.launchpad.net"
+
+remove the ``*.ppa.upload`` files
+
+If you get an email back like the one below, download the ``*orig.tar.gz`` from launchpad, and replace your ``*orig.tar.gz`` with it before you do the ``debuild -S``.
+
+    Rejected:
+    File gtsam_4.0.2.orig.tar.gz already exists in GTSAM Georgia Tech Smoothing And Mapping, but uploaded version has different contents.
+
+
+### Build problems
 
 Reading the error messages of failed GTSAM builds can be really hard, because the actual error often is drowned by "error" messages when Cmake probes and doesn't find certain libraries.
 
