@@ -3,7 +3,19 @@
 How to package GTSAM and upload to Ubuntu PPA
 
 
-## Grab the modified source code
+## Grab the source code
+
+(Warning: Building from the original sources will not work as I had to
+make modifications to the source tree to build. Rather than doing it
+the right way, with patches as described later, I updated the gtsam
+sources. See below how to grab my sources which will should work with
+this procedure)
+
+    git https://github.com/borglab/gtsam.git gtsam
+	cd gtsam
+	git checkout 4.0.2
+
+## Alternative: grab the modified source code
 
     git clone https://github.com/berndpfrommer/gtsam.git gtsam
 	cd gtsam
