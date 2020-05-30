@@ -22,6 +22,8 @@ What version of the tree you should check out?
 
 This will create a tar ball with the original, unchanged sources. You can only upload a tarball like that *once* for any given version, e.g. 4.0.2. All subsequent modifications that you make to the sources, for instance to get the sources to build, must be captured by patches with respect to that tar ball. The ``quilt`` tool is used for such patching. 
 
+If you don't know exactly what is uploaded at this point, download the ``*.orig.tar.gz`` file from launchpad, and put it in place of the above one. The build process will croak if the sources differ, so you should get an alert.
+
 
 ## Grab the debian files from the packaging repo
 
