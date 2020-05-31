@@ -12,19 +12,22 @@ Since you may end up uploading the same major+minor number software with slight 
 
     mod_version=2pfrommer1
 
+You can pick a particular commit within that version, or just pick the tag that is equal to the version
+
+    gtsam_commit=${gtsam_version}
+
 ## Grab the source code
 
 Directly from the GTSAM repo:
 
     git https://github.com/borglab/gtsam.git gtsam
 	cd gtsam
-	git checkout ${gtsam_version}
+	git checkout ${gtsam_commit}
 
-You can also checkout a specific commit you like
 
 ## Make the tar ball
 
-    git archive --format=tar HEAD -o ../gtsam_${gtsam_version}.orig.tar
+    git archive --format=tar ${gtsam_commit} -o ../gtsam_${gtsam_version}.orig.tar
 	gzip ../gtsam_${gtsam_version}.orig.tar
 
 This will create a tar ball with the original, unchanged sources. You can only upload a tarball like that *once* for any given version, e.g. 4.0.2. All subsequent modifications that you make to the sources, for instance to get the sources to build, must be captured by patches with respect to that tar ball. The ``quilt`` tool is used for such patching. 
@@ -52,13 +55,13 @@ Now *before* you make any more changes to any files in the source tree, start a 
 
     dquilt new whatever-this-patch-is-called.patch
 
-And add the file(s) you need to edit *before* you edit them, for example
+And add *all* the file(s) you need to edit *before* you edit them, for example
 
     dquilt add CMakeLists.txt
 	(now edit CMakeLists.txt)
 	dquilt refresh  # re-read all edited files and record their changes, as often as you like
 
-When you are done with all patches, save them away
+When you are done with building the patch, save it away:
 
     dquilt header -e   # finish the patch you started
     dquilt pop -a      # unapply all patches, revert to original source
