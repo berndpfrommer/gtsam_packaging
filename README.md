@@ -116,17 +116,18 @@ So in this case it's ``C50C547F``. You must have that key deposited beforehand w
 
     gpg --send-keys --keyserver keyserver.ubuntu.com 8CAF5F59C50C547F
 
-Again in the ``gtsam`` directory, build a source package:
+Again in the ``gtsam`` directory, build a source package, with the key directly after the ``-k`` option, prepended by ``0x``.:
 
-    debuild -k 8CAF5F59C50C547F -S
+    debuild -k0x8CAF5F59C50C547F -S -sa
 
-This should prompt you for passphrase if your private key is protected
+This should prompt you for passphrase if your private key is protected.
+NOTE: the ``-sa`` is only required the first time you upload the source package (``*orig.tar.gz``). It's not needed subsequently.
 
 ## Upload to PPA:
 
 The directory one up from the source directory should now have various packages. Upload this one (adjust ppa setting)
 
-    dput "ppa:bernd-pfrommer/gtsam" gtsam_4.0.2-${mod_version}_source.changes
+    dput "ppa:bernd-pfrommer/gtsam" gtsam_${gtsam_version}-${mod_version}_source.changes
 
 ## Uploading multiple distributions
 
