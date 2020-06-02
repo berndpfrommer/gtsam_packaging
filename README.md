@@ -130,7 +130,7 @@ NOTE: the ``-sa`` is only required the first time you upload the source package 
 
 The directory one up from the source directory should now have various packages. Upload this one (adjust ppa setting)
 
-    dput "ppa:bernd-pfrommer/gtsam" gtsam_${gtsam_version}-${mod_version}_source.changes
+    dput "ppa:bernd-pfrommer/libgtsam" gtsam_${gtsam_version}-${mod_version}~${distro}_source.changes
 
 ## Uploading multiple distributions
 
