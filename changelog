@@ -1,3 +1,9 @@
+gtsam (4.0.2-2~pfrommer~1~xenial) xenial; urgency=medium
+
+  * update distro to xenial
+
+ -- Bernd Pfrommer <bernd.pfrommer@gmail.com>  Tue, 02 Jun 2020 16:04:18 -0400
+
 gtsam (4.0.2-2pfrommer1) bionic; urgency=medium
 
   * Modified CMakeLists.txt to build under multiarch and on newer Ubuntu

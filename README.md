@@ -8,13 +8,18 @@ First decide what version of GTSAM you want to build. There is no wiggle room he
 
     gtsam_version=4.0.2
 	
-Since you may end up uploading the same major+minor number software with slight packaging modificiations until you are happy with what is in your ppa, you must maintain your own version number that needs to lexicographically increase every time you upload a new version. Traditionally this version number has been just 1, 2... etc, but it is a good idea to use it to indicate where this package comes from, i.e. your personal ppa. Let's define a shell variable for this:
-
-    mod_version=2pfrommer1
-
 You can pick a particular commit within that version, or just pick the tag that is equal to the version
 
     gtsam_commit=${gtsam_version}
+
+Since you may end up uploading the same major+minor number software with slight packaging modificiations until you are happy with what is in your ppa, you must maintain your own version number that needs to lexicographically increase every time you upload a new version. Traditionally this version number has been just 1, 2... etc, but it is a good idea to use it to indicate where this package comes from, i.e. your personal ppa. Let's define a shell variable for this:
+
+    mod_version=2~pfrommer~1
+
+Lastly, we'll need to set the distribution, which will also get  mangled into the name
+
+    distro=bionic
+
 
 ## Grab the source code
 
@@ -33,7 +38,7 @@ Directly from the GTSAM repo:
 
 This will create a tar ball with the original, unchanged sources. You can only upload a tarball like that *once* for any given version, e.g. 4.0.2. All subsequent modifications that you make to the sources, for instance to get the sources to build, must be captured by patches with respect to that tar ball. The ``quilt`` tool is used for such patching. 
 
-If you don't know exactly what is uploaded at this point, download the ``*.orig.tar.gz`` file from launchpad, and put it in place of the above one. The build process will croak if the sources differ, so you should get an alert.
+If you don't know exactly what is uploaded at this point, download the ``*.orig.tar.gz`` file from launchpad, and put it in place of the above one. The build process will croak if the sources differ from what's in your source file.
 
 
 ## Grab the debian files from the packaging repo
@@ -69,21 +74,18 @@ When you are done with building the patch, save it away:
 
 ## Update the changelog
 
-We also need to specify what Ubuntu distribution we are targeting, i.e:
-
-    distro=bionic
-
-Further required: your name and email. This must go into the DEBEMAIL variable:
+Updating the changelog requires your name and email. This must go into the DEBEMAIL variable:
 
     export DEBEMAIL="Bernd Pfrommer <bernd.pfrommer@gmail.com>"
 
-Lastly, some change comments are required, for instance:
+You also need a change comment, for instance:
 
     change_comment="Modified CMakeLists.txt to build on newer Ubuntu distros"
 
 Now (inside the gtsam directory) update the ``debian/changelog`` file like so:
 
-    debchange --package gtsam --newversion ${gtsam_version}-${mod_version} --distribution $distro -b --force-distribution $change_comment
+    cd $root_dir/debian
+    debchange --package gtsam --newversion ${gtsam_version}-${mod_version}~${distro} --distribution $distro -b --force-distribution $change_comment
 
 Note: The package name ``gtsam`` (specified with the ``--package`` option) must agree with what is in the ``Source`` section of the ``debian/control`` file. This is the name under which later the ``*.orig.tar.gz`` file will be searched for when you build the debian source package.
 
