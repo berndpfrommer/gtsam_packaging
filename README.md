@@ -95,7 +95,7 @@ If you want custom build flags, edit the ``debian/rules`` file accordingly
 
 Inside the ``gtsam`` source directory, do a local test build to see that you can build a binary package.
 
-    cd gtsam
+    cd $root_dir
     debuild -b -us -uc
 
 If you make any changes to get things to work, like editing CMakeLists.txt, *do not* commit them to the original source tree. 
@@ -115,11 +115,12 @@ The key id is the 8-byte hex number right after "rsaNNN/":
 
 So in this case it's ``C50C547F``. You must have that key deposited beforehand with the ubuntu keyserver, and activated on launchpad (see instructions there), so in this case:
 
-    gpg --send-keys --keyserver keyserver.ubuntu.com 8CAF5F59C50C547F
+    gpg --send-keys --keyserver keyserver.ubuntu.com C50C547F
 
-Again in the ``gtsam`` directory, build a source package, with the key directly after the ``-k`` option, prepended by ``0x``.:
+Again in the ``gtsam`` directory, build a source package, with the key directly after the ``-k`` option:
 
-    debuild -k0x8CAF5F59C50C547F -S -sa
+    cd $root_dir
+    debuild -kC50C547F -S -sa
 
 This should prompt you for passphrase if your private key is protected.
 NOTE: the ``-sa`` is only required the first time you upload the source package (``*orig.tar.gz``). It's not needed subsequently.
