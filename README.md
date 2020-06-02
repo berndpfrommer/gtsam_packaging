@@ -4,7 +4,7 @@ How to package GTSAM and upload to Ubuntu PPA
 
 ## About version numbers
 
-First decided what version of GTSAM you want to build. There is no wiggle room here, it has to be three numbers. Set up a shell variable like so:
+First decide what version of GTSAM you want to build. There is no wiggle room here, it has to be three numbers. To avoid typing it repeatedly, set up a shell variable like so:
 
     gtsam_version=4.0.2
 	
@@ -20,8 +20,9 @@ You can pick a particular commit within that version, or just pick the tag that 
 
 Directly from the GTSAM repo:
 
-    git https://github.com/borglab/gtsam.git gtsam
+    git clone https://github.com/borglab/gtsam.git gtsam
 	cd gtsam
+	root_dir=`pwd`   # top of sources
 	git checkout ${gtsam_commit}
 
 
@@ -37,7 +38,7 @@ If you don't know exactly what is uploaded at this point, download the ``*.orig.
 
 ## Grab the debian files from the packaging repo
 
-    cd gtsam
+    cd $root_dir
 	rm -rf debian
 	git clone https://github.com/berndpfrommer/gtsam_packaging debian
 
@@ -45,7 +46,7 @@ If you don't know exactly what is uploaded at this point, download the ``*.orig.
 
 The quilt patch management tool needs some configuration, so here is an alias for it that you need to run in the ``gtsam`` source tree (one up from the debian tree)
 
-    cd gtsam/debian
+    cd ${root_dir}/debian
     alias dquilt="quilt --quiltrc=`pwd`/quiltrc-dpkg"
     cd ..
 	dquilt push -a   # apply all patches up til now
